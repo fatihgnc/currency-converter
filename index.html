@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- importing jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <title>Currency API</title>
+    <style>
+
+        *{
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        form{
+            width: 50%;
+            max-width: 500px;
+            background: rgba(0,0,0,.75);
+            padding: 2em;
+            color: white;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        button{
+            display: block;
+            margin: 1em auto 0;
+            padding: .5em 2em;
+            outline: none;
+            border: none;
+            border-radius: 15px;
+            background: rgba(0,0,0,.55);
+            color: white;
+            transition: all .3s ease;
+        }
+
+        button:hover{
+            background: rgba(255,255,255,.55);
+            color: black;
+            font-weight: bold;
+        }
+
+        .results{
+            position: relative;
+            display: none;
+            background: gray;
+            color: black;
+            width: 50%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 2em;
+        }
+
+        table{
+            background-color: rgba(255,255,255,.55);
+            border: thin solid black;
+            padding: 1em;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .caption{
+            margin-bottom: 1em;
+            font-weight: bold;
+        }
+
+        td,
+        th{
+            border: thin solid black;
+            padding: .5em;
+        }
+
+        .slide-up{
+            opacity: 0;
+            position: absolute;
+            top: 3%;
+            right: 3%;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1em;
+            background: black;
+            color: white;
+            text-align: center;
+            font-size: 1.2em;
+            margin: 0 auto;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <form>
+        <!-- currency -->
+            <label for="currency">Select the based currency:</label>
+            <select id="currency">
+                <option value="USD">USD</option>
+                <option value="TRY">TRY</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+            </select>
+        <button type="submit">Fetch</button>
+    </form>
+
+    <!-- results -->
+    <div class="results">
+        <table>
+            <div class="slide-up">&times;</div>
+            <caption class="caption">This currency is based on GBP</caption>
+            <thead class="thead">
+                
+            </thead>
+            <tbody>
+                <tr class="tr">
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+</body>
+
+</html>
+
+<!-- jQuery -->
+<script>
+    // global variables
+    const submit = $('button')
+    const results = $('.results')
+    const slideUp = $('.slide-up')
+    const th = $('.thead')
+    const tr = $('.tr')
+    const caption = $('.caption')
+    var currencyValue
+
+    submit.on('click', (e) => {
+        e.preventDefault()
+        currencyValue = $('#currency').val()
+        fetchData(currencyValue)
+        results.slideDown(250, function(){
+            slideUp.animate({opacity: 1},250)
+        })
+
+        slideUp.on('click', function(){
+                slideUp.animate({opacity: 0}, 250)
+                results.slideUp(750)
+        })
+    })
+
+    // fetching data
+    function fetchData(currency) {
+        prev = currency
+        // splicing the selected rate
+        var currencies = ['USD', 'EUR', 'GBP', 'TRY', 'CAD']
+        var removeIndex = currencies.indexOf(currency)
+        currencies.splice(removeIndex, 1)
+
+        // fetching and printing out data
+        fetch(`https://api.exchangeratesapi.io/latest?base=${currency}&symbols=${currencies}`)
+            .then(resp => resp.json())
+            .then(data => {
+                tr.empty()
+                th.empty()
+                caption.text(`This currency is based on ${currency}`)
+                var rates = data.rates
+                for(let rate in rates){
+                    th.append(`<th> ${rate} </th>`)
+                    tr.append(`<td> ${rates[rate].toFixed(4)} </td>`)
+                }
+            })
+    }
+</script>
