@@ -6,174 +6,336 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- importing jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <title>Currency API</title>
     <style>
-
-        *{
+        * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Poppins', sans-serif;
         }
 
-        form{
-            width: 50%;
-            max-width: 500px;
-            background: rgba(0,0,0,.75);
-            padding: 2em;
-            color: white;
-            margin: 0 auto;
-            text-align: center;
+        body {
+            height: 100vh;
+            display: grid;
+            place-items: center;
+            background: url('https://images.pexels.com/photos/36717/amazing-animal-beautiful-beautifull.jpg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940');
+            background-size: cover;
+            background-position: center;
         }
-        
-        button{
-            display: block;
-            margin: 1em auto 0;
-            padding: .5em 2em;
+
+        .container {
+            height: 60vh;
+            position: relative;
+            background: rgba(0, 0, 0, .75);
+            color: white;
+            width: 20%;
+            max-width: 960px;
+            display: flex;
+            justify-content: space-evenly;
+            flex-direction: column;
+            flex-flow: column-reverse;
+            gap: 2em;
+            padding: 2rem;
+            margin: 0 auto;
+        }
+
+        @media screen and (max-width: 1200px){
+            .container{
+                width: 40%;
+            }
+        }
+
+        @media screen and (max-width: 880px){
+            .container{
+                width: 60%;
+            }
+        }
+
+        .currency-header,
+        .converter-header{
+            color: yellow;
+        }
+
+        /* form elements */
+        form {
+            margin: .5em 0;
+        }
+
+        input {
+            padding: .25rem;
+            margin: .25rem 0;
+        }
+
+        input:focus {
             outline: none;
             border: none;
-            border-radius: 15px;
-            background: rgba(0,0,0,.55);
+            border-bottom: thick solid rebeccapurple !important;
+        }
+
+        :focus::placeholder {
+            transform: scale(.5);
+        }
+
+        input::placeholder {
+            color: gray;
+            transform-origin: top left;
+            transition: transform .5s ease;
+        }
+
+        select {
+            padding: .25em;
+            width: 100px;
+        }
+
+        /* results */
+        .converted-values div,
+        .result {
+            border-left: thin solid rebeccapurple;
+            margin: .75em 0;
+            white-space: pre;
+        }
+
+        /* footer */
+        .footer{
+            width: 100%;
+            height: 25vh;
+            background: rgba(0, 0, 0, .75);
             color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+        }
+
+        @media screen and (max-width: 500px){
+            .footer{
+                flex-direction: column;
+            }
+        }
+
+        .icons {
+            text-align: center;
+        }
+
+        .author {
+            font-size: 2.5em;
+            text-align: center;
+        }
+
+        @media screen and (max-width:1100px) {
+            .author {
+                font-size: 2rem;
+            }
+        }
+
+        @media screen and (max-width: 700px){
+            .author{
+                font-size: 1.3rem;
+            }
+        }
+
+        .author span {
+            position: relative;
+            cursor: pointer;
+            display: block;
+            font-weight: bold;
+        }
+
+        .author span:hover {
+            color: rebeccapurple;
+        }
+
+        .author span::before {
+            content: 'Fatih Genç';
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: translateY(-100%);
             transition: all .3s ease;
         }
 
-        button:hover{
-            background: rgba(255,255,255,.55);
-            color: black;
-            font-weight: bold;
+        .author span:hover::before {
+            transform: translateY(0%);
+            opacity: 1;
         }
 
-        .results{
-            position: relative;
-            display: none;
-            background: gray;
-            color: black;
-            width: 50%;
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 2em;
+        svg {
+            fill: white;
+            transition: all .3s ease;
         }
 
-        table{
-            background-color: rgba(255,255,255,.55);
-            border: thin solid black;
-            padding: 1em;
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .caption{
-            margin-bottom: 1em;
-            font-weight: bold;
-        }
-
-        td,
-        th{
-            border: thin solid black;
-            padding: .5em;
-        }
-
-        .slide-up{
-            opacity: 0;
-            position: absolute;
-            top: 3%;
-            right: 3%;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1em;
-            background: black;
-            color: white;
-            text-align: center;
-            font-size: 1.2em;
-            margin: 0 auto;
-            cursor: pointer;
+        svg:hover {
+            fill: rebeccapurple;
+            transform: scale(1.1);
         }
     </style>
 </head>
 
 <body>
-    <form>
-        <!-- currency -->
-            <label for="currency">Select the based currency:</label>
+    <div class="container">
+        <div class="currency-container">
+
+            <div class="header-container">
+                <h2 class="currency-header">Currency Part</h2>
+                <form>
+                    <select class="currency">
+                        <option value="USD">USD</option>
+                        <option value="TRY">TRY</option>
+                        <option value="CAD">CAD</option>
+                        <option value="GBP">GBP</option>
+                        <option value="EUR">EUR</option>
+                    </select>
+                </form>
+            </div>
+
+            <div class="results">
+
+            </div>
+
+        </div>
+
+        <div class="currency-converter">
+            <h2 class="converter-header">Converter Part</h2>
+            <input type="text" id="currency-value" placeholder="Enter amount...">
+
             <select id="currency">
                 <option value="USD">USD</option>
                 <option value="TRY">TRY</option>
-                <option value="EUR">EUR</option>
+                <option value="CAD">CAD</option>
                 <option value="GBP">GBP</option>
+                <option value="EUR">EUR</option>
             </select>
-        <button type="submit">Fetch</button>
-    </form>
 
-    <!-- results -->
-    <div class="results">
-        <table>
-            <div class="slide-up">&times;</div>
-            <caption class="caption">This currency is based on GBP</caption>
-            <thead class="thead">
-                
-            </thead>
-            <tbody>
-                <tr class="tr">
+            <div class="converted-values">
 
-                </tr>
-            </tbody>
-        </table>
+            </div>
+        </div>
     </div>
-    
+
+    <div class="footer">
+            <div class="author">This application is created by <span>Fatih Genç</span></div>
+
+            <div class="icons">
+                <a href="https://github.com/fatihgnc" target="_blank">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
+                        <path
+                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                        </svg>
+                </a>
+
+                <a href="https://twitter.com/7bachiko" target="_blank">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
+                        <path
+                            d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6.066 9.645c.183 4.04-2.83 8.544-8.164 8.544-1.622 0-3.131-.476-4.402-1.291 1.524.18 3.045-.244 4.252-1.189-1.256-.023-2.317-.854-2.684-1.995.451.086.895.061 1.298-.049-1.381-.278-2.335-1.522-2.304-2.853.388.215.83.344 1.301.359-1.279-.855-1.641-2.544-.889-3.835 1.416 1.738 3.533 2.881 5.92 3.001-.419-1.796.944-3.527 2.799-3.527.825 0 1.572.349 2.096.907.654-.128 1.27-.368 1.824-.697-.215.671-.67 1.233-1.263 1.589.581-.07 1.135-.224 1.649-.453-.384.578-.87 1.084-1.433 1.489z" />
+                        </svg>
+                </a>
+
+                <a href="https://www.linkedin.com/in/fatih-genç-817512201/" target="_blank">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
+                        <path
+                            d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2 16h-2v-6h2v6zm-1-6.891c-.607 0-1.1-.496-1.1-1.109 0-.612.492-1.109 1.1-1.109s1.1.497 1.1 1.109c0 .613-.493 1.109-1.1 1.109zm8 6.891h-1.998v-2.861c0-1.881-2.002-1.722-2.002 0v2.861h-2v-6h2v1.093c.872-1.616 4-1.736 4 1.548v3.359z" />
+                        </svg>
+                </a>
+            </div>
+        
+    </div>
 </body>
 
 </html>
 
 <!-- jQuery -->
 <script>
-    // global variables
-    const submit = $('button')
-    const results = $('.results')
-    const slideUp = $('.slide-up')
-    const th = $('.thead')
-    const tr = $('.tr')
-    const caption = $('.caption')
-    var currencyValue
+    $(document).ready(function () {
+        convertCurrency()
+        getCurrency()
+        
+        // global variables
+        var $convertedValues = $('.converted-values')
+        var $results = $('.results')
 
-    submit.on('click', (e) => {
-        e.preventDefault()
-        currencyValue = $('#currency').val()
-        fetchData(currencyValue)
-        results.slideDown(250, function(){
-            slideUp.animate({opacity: 1},250)
+        // attaching events
+        $('#currency-value').on('keyup', function () {
+            convertCurrency()
         })
 
-        slideUp.on('click', function(){
-                slideUp.animate({opacity: 0}, 250)
-                results.slideUp(750)
+        $('#currency').on('change', function () {
+            convertCurrency()
         })
+
+        $('.currency').on('change', function(){
+            getCurrency()
+        })
+
+        // converting currency
+        function convertCurrency() {
+            var converterValue = $('#currency').val()
+            var currencies = ['USD', 'EUR', 'GBP', 'CAD', 'TRY']
+            var removeIndex = currencies.indexOf(converterValue)
+            currencies.splice(removeIndex, 1)
+
+            fetch(`https://api.exchangeratesapi.io/latest?base=${converterValue}&symbols=${currencies}`)
+                .then(response => response.json())
+                .then(data => {
+                    $convertedValues.empty()
+                    var rates = data.rates
+
+                    for (let symbol in rates) {
+                        if (symbol === 'CAD') {
+                            if ($('#currency-value').val() === '') $convertedValues.append('<div> 0 $ (Canada Dollar) </div>')
+                            else $convertedValues.append(`<div> ${(rates[symbol] * parseInt($('#currency-value').val())).toFixed(2)} $ (Canada Dollar) </div>`)
+                        }
+                        else if (symbol === 'EUR') {
+                            if ($('#currency-value').val() === '') $convertedValues.append('<div> 0 € </div>')
+                            else $convertedValues.append(`<div> ${(rates[symbol] * parseInt($('#currency-value').val())).toFixed(2)} € </div>`)
+                        }
+                        else if (symbol === 'USD') {
+                            if ($('#currency-value').val() === '') $convertedValues.append('<div> 0 $ (USD) </div>')
+                            else $convertedValues.append(`<div> ${(rates[symbol] * parseInt($('#currency-value').val())).toFixed(2)} $ (USD) </div>`)
+                        }
+                        else if (symbol === 'TRY') {
+                            if ($('#currency-value').val() === '') $convertedValues.append('<div> 0 ₺ </div>')
+                            else $convertedValues.append(`<div> ${(rates[symbol] * parseInt($('#currency-value').val())).toFixed(2)} ₺ </div>`)
+                        }
+                        else if (symbol === 'GBP') {
+                            if ($('#currency-value').val() === '') $convertedValues.append('<div> 0 £ </div>')
+                            else $convertedValues.append(`<div> ${(rates[symbol] * parseInt($('#currency-value').val())).toFixed(2)} £ </div>`)
+                        }
+                    }
+                })
+        }
+
+        // getting currency
+        function getCurrency() {
+            var $currencySelect = $('.currency').val()
+            var currencies = ['USD', 'EUR', 'GBP', 'CAD', 'TRY']
+            var removeIndex = currencies.indexOf($currencySelect)
+            currencies.splice(removeIndex, 1)
+
+            fetch(`https://api.exchangeratesapi.io/latest?base=${$currencySelect}&symbols=${currencies}`)
+                .then(response => response.json())
+                .then(data => {
+                    $results.empty()
+                    var rates = data.rates
+
+                    for (let symbol in rates) {
+                        if (symbol === 'CAD') {
+                            $results.append(`<div> 1 ${$currencySelect} equals ${rates[symbol].toFixed(2)} $ (Canada Dollar)`)
+                        } else if (symbol === 'EUR') {
+                            $results.append(`<div> 1 ${$currencySelect} equals ${rates[symbol].toFixed(2)} €`)
+                        } else if (symbol === 'TRY') {
+                            $results.append(`<div> 1 ${$currencySelect} equals ${rates[symbol].toFixed(2)} ₺`)
+                        } else if (symbol === 'GBP') {
+                            $results.append(`<div> 1 ${$currencySelect} equals ${rates[symbol].toFixed(2)} £`)
+                        } else if (symbol === 'USD') {
+                            $results.append(`<div> 1 ${$currencySelect} equals ${rates[symbol].toFixed(2)} $ (USD)`)
+                        }
+                    }
+                })
+        } 
     })
-
-    // fetching data
-    function fetchData(currency) {
-        prev = currency
-        // splicing the selected rate
-        var currencies = ['USD', 'EUR', 'GBP', 'TRY', 'CAD']
-        var removeIndex = currencies.indexOf(currency)
-        currencies.splice(removeIndex, 1)
-
-        // fetching and printing out data
-        fetch(`https://api.exchangeratesapi.io/latest?base=${currency}&symbols=${currencies}`)
-            .then(resp => resp.json())
-            .then(data => {
-                tr.empty()
-                th.empty()
-                caption.text(`This currency is based on ${currency}`)
-                var rates = data.rates
-                for(let rate in rates){
-                    th.append(`<th> ${rate} </th>`)
-                    tr.append(`<td> ${rates[rate].toFixed(4)} </td>`)
-                }
-            })
-    }
 </script>
