@@ -42,6 +42,23 @@
             margin: 0 auto;
         }
 
+        .input-container{
+            position: relative;
+            display: inline-block;
+        }
+
+        .currency-symbol{
+            position: absolute;
+            display: inline-block;
+            background: lightgray;
+            border: thin solid gray;
+            left: 84%;
+            top: 15%;
+            padding: 0 .25em;
+            transition: all .1s ease;
+            color: black;
+        }
+
         @media screen and (max-width: 1200px){
             .container{
                 width: 40%;
@@ -72,7 +89,13 @@
         input:focus {
             outline: none;
             border: none;
-            border-bottom: thick solid rebeccapurple !important;
+            border-left: thick solid rebeccapurple !important;
+        }
+
+        input:focus + .currency-symbol{
+            top: 13.5%;
+            box-shadow: -1px 1px 0 black;
+            font-size: 15.5px;
         }
 
         :focus::placeholder {
@@ -200,9 +223,13 @@
 
         <div class="currency-converter">
             <h2 class="converter-header">Converter Part</h2>
-            <input type="text" id="currency-value" placeholder="Enter amount...">
+            <div class="input-container">
+                <input type="text" id="currency-value" placeholder="Enter amount...">
+                <span class="currency-symbol">$</span>
+            </div>
+            
 
-            <select id="currency">
+            <select id="converter">
                 <option value="USD">USD</option>
                 <option value="TRY">TRY</option>
                 <option value="CAD">CAD</option>
@@ -262,7 +289,7 @@
             convertCurrency()
         })
 
-        $('#currency').on('change', function () {
+        $('#converter').on('change', function () {
             convertCurrency()
         })
 
@@ -272,15 +299,30 @@
 
         // converting currency
         function convertCurrency() {
-            var converterValue = $('#currency').val()
+            var converterSelectedValue = $('#converter').val()
             var currencies = ['USD', 'EUR', 'GBP', 'CAD', 'TRY']
-            var removeIndex = currencies.indexOf(converterValue)
+            var removeIndex = currencies.indexOf(converterSelectedValue)
             currencies.splice(removeIndex, 1)
+            var $currencySymbol = $('.currency-symbol')
+            
+            if(converterSelectedValue === 'USD'){
+                $currencySymbol.text('$')
+            } else if(converterSelectedValue === 'CAD'){
+                $currencySymbol.text('$')
+            } else if(converterSelectedValue === 'GBP'){
+                $currencySymbol.text('£')
+            } else if(converterSelectedValue === 'TRY'){
+                $currencySymbol.text('₺')
+            } else if(converterSelectedValue === 'EUR'){
+                $currencySymbol.text('€')
+            }
+            
 
-            fetch(`https://api.exchangeratesapi.io/latest?base=${converterValue}&symbols=${currencies}`)
+            fetch(`https://api.exchangeratesapi.io/latest?base=${converterSelectedValue}&symbols=${currencies}`)
                 .then(response => response.json())
                 .then(data => {
                     $convertedValues.empty()
+                    
                     var rates = data.rates
 
                     for (let symbol in rates) {
@@ -314,6 +356,19 @@
             var currencies = ['USD', 'EUR', 'GBP', 'CAD', 'TRY']
             var removeIndex = currencies.indexOf($currencySelect)
             currencies.splice(removeIndex, 1)
+            var $currencySymbol = $('.currency-symbol')
+            
+            if($currencySelect === 'USD'){
+                $currencySymbol.text('$')
+            } else if($currencySelect === 'CAD'){
+                $currencySymbol.text('$')
+            } else if($currencySelect === 'GBP'){
+                $currencySymbol.text('£')
+            } else if($currencySelect === 'TRY'){
+                $currencySymbol.text('₺')
+            } else if($currencySelect === 'EUR'){
+                $currencySymbol.text('€')
+            }
 
             fetch(`https://api.exchangeratesapi.io/latest?base=${$currencySelect}&symbols=${currencies}`)
                 .then(response => response.json())
